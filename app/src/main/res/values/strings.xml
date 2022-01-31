@@ -20,4 +20,11 @@
     <string name="change">Change</string>
     <string name="settings">settings</string>
     <string name="displays_des">displays des</string>
+    <string name="sort_contacts_by">Sort Contacts By:</string>
+    <string name="name">Name</string>
+    <string name="city">City</string>
+    <string name="radioBirthday">Birthday</string>
+    <string name="ascending">Ascending</string>
+    <string name="descending">Descending</string>
+    <string name="sort_order">Sort Order:</string>
 </resources>
