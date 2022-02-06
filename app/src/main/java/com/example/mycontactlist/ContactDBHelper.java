@@ -31,7 +31,7 @@ public class ContactDBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(ContactDBHelper.class.getName(),
-                "Upgrading databse from version " + oldVersion + " to "
+                "Upgrading database from version " + oldVersion + " to "
 
                         + newVersion + ", which will destroy all old data");
         db.execSQL("DROP TABLE IF EXISTS contact");

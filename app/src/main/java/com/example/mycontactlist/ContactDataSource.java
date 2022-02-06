@@ -7,6 +7,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 public class ContactDataSource {
 
     private SQLiteDatabase database;
@@ -85,5 +87,24 @@ public class ContactDataSource {
             lastId = -1;
         }
         return lastId;
+    }
+
+    public ArrayList<String> getContactName(){
+        ArrayList<String> contactsNames = new ArrayList<>();
+        try{
+            String query = "Select contactname from contact ";
+            Cursor cursor = database.rawQuery(query, null);
+
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+                contactsNames.add(cursor.getString(0));
+                cursor.moveToNext();
+            }
+            cursor.close();
+        }
+        catch (Exception e){
+            contactsNames = new ArrayList<String>();
+        }
+        return contactsNames;
     }
 }
