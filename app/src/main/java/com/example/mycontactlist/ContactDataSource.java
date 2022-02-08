@@ -2,31 +2,30 @@ package com.example.mycontactlist;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.SearchRecentSuggestionsProvider;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class ContactDataSource {
-
     private SQLiteDatabase database;
     private ContactDBHelper dbHelper;
 
-    public ContactDataSource (Context context){
+    public ContactDataSource(Context context) {
         dbHelper = new ContactDBHelper(context);
     }
 
-    public void open () throws SQLException {
+    public void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close (){
+    public void close() {
         dbHelper.close();
     }
-    public boolean insertContact (Contact c){
+
+    public boolean insertContact(Contact c) {
         boolean didSucceed = false;
         try {
             ContentValues initialValues = new ContentValues();
@@ -39,17 +38,17 @@ public class ContactDataSource {
             initialValues.put("phonenumber", c.getPhoneNumber());
             initialValues.put("cellnumber", c.getCellNumber());
             initialValues.put("email", c.getEMail());
-            initialValues.put("birthday", String.valueOf(c.getBirthday().getTimeInMillis()));
+            initialValues.put("birthday",String.valueOf(c.getBirthday().getTimeInMillis()));
 
             didSucceed = database.insert("contact", null, initialValues) > 0;
         }
-        catch(Exception e) {
-            //do nothing - will return false if there is an exception
+        catch (Exception e) {
+            //Do nothing -will return false if there is an exception
         }
         return didSucceed;
     }
 
-    public boolean updateContact(Contact c){
+    public boolean updateContact(Contact c) {
         boolean didSucceed = false;
         try {
             Long rowId = (long) c.getContactID();
@@ -69,14 +68,14 @@ public class ContactDataSource {
             didSucceed = database.update("contact", updateValues, "_id=" + rowId, null) > 0;
         }
         catch (Exception e) {
-            // do nothing - will return false if there is an exception
+            //Do nothing -will return false if there is an exception
         }
         return didSucceed;
-
     }
-    public int getLastContactId(){
+
+    public int getLastContactId() {
         int lastId;
-        try{
+        try {
             String query = "Select MAX(_id) from contact";
             Cursor cursor = database.rawQuery(query, null);
 
@@ -84,39 +83,40 @@ public class ContactDataSource {
             lastId = cursor.getInt(0);
             cursor.close();
         }
-        catch (Exception e){
+        catch (Exception e) {
             lastId = -1;
         }
         return lastId;
     }
 
-    public ArrayList<String> getContactName(){
-        ArrayList<String> contactsNames = new ArrayList<>();
-        try{
-            String query = "Select contactname from contact ";
+    public ArrayList<String> getContactName() {
+        ArrayList<String> contactNames = new ArrayList<>();
+        try {
+            String query = "Select contactname from contact";
             Cursor cursor = database.rawQuery(query, null);
 
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()){
-                contactsNames.add(cursor.getString(0));
+            while (!cursor.isAfterLast()) {
+                contactNames.add(cursor.getString(0));
                 cursor.moveToNext();
             }
             cursor.close();
         }
-        catch (Exception e){
-            contactsNames = new ArrayList<String>();
+        catch (Exception e) {
+            contactNames = new ArrayList<String>();
         }
-        return contactsNames;
+        return contactNames;
     }
-    public ArrayList<Contact> getContacts(){
+
+    public ArrayList<Contact> getContacts(String sortField, String sortOrder) {
         ArrayList<Contact> contacts = new ArrayList<Contact>();
-        try{
-            String query = "SELECT * FROM contact";
+        try {
+            String query = "SELECT  * FROM contact ORDER BY " + sortField + " " + sortOrder;
             Cursor cursor = database.rawQuery(query, null);
 
             Contact newContact;
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()){
+            while (!cursor.isAfterLast()) {
                 newContact = new Contact();
                 newContact.setContactID(cursor.getInt(0));
                 newContact.setContactName(cursor.getString(1));
@@ -125,6 +125,7 @@ public class ContactDataSource {
                 newContact.setState(cursor.getString(4));
                 newContact.setZipCode(cursor.getString(5));
                 newContact.setPhoneNumber(cursor.getString(6));
+                newContact.setCellNumber(cursor.getString(7));
                 newContact.setEMail(cursor.getString(8));
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis(Long.valueOf(cursor.getString(9)));
@@ -134,9 +135,45 @@ public class ContactDataSource {
             }
             cursor.close();
         }
-        catch (Exception e){
+        catch (Exception e) {
             contacts = new ArrayList<Contact>();
         }
         return contacts;
     }
+
+    public Contact getSpecificContact(int contactId) {
+        Contact contact = new Contact();
+        String query = "SELECT  * FROM contact WHERE _id =" + contactId;
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            contact.setContactID(cursor.getInt(0));
+            contact.setContactName(cursor.getString(1));
+            contact.setStreetAddress(cursor.getString(2));
+            contact.setCity(cursor.getString(3));
+            contact.setState(cursor.getString(4));
+            contact.setZipCode(cursor.getString(5));
+            contact.setPhoneNumber(cursor.getString(6));
+            contact.setCellNumber(cursor.getString(7));
+            contact.setEMail(cursor.getString(8));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.valueOf(cursor.getString(9)));
+            contact.setBirthday(calendar);
+
+            cursor.close();
+        }
+        return contact;
+    }
+
+    public boolean deleteContact(int contactId) {
+        boolean didDelete = false;
+        try {
+            didDelete = database.delete("contact", "_id=" + contactId, null) > 0;
+        }
+        catch (Exception e) {
+            //Do nothing -return value already set to false
+        }
+        return didDelete;
+    }
+
 }
