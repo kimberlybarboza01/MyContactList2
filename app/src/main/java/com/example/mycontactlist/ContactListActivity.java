@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -35,10 +36,44 @@ public class ContactListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_list);
-
-
+        initListButton();
+        initMapButton ();
+        initSettingButton();
         initAddContactButton();
         initDeleteSwitch();
+    }
+
+    public void initListButton(){
+        ImageButton ibList = findViewById(R.id.imageButtonList);
+        ibList.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                Intent intent = new Intent(ContactListActivity.this, ContactListActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP );
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void initMapButton (){
+        ImageButton ibMap = findViewById(R.id.imageButtonMap);
+        ibMap.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View view) {
+                Intent intent = new Intent(ContactListActivity.this, ContactMapActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
+    }
+    public void initSettingButton(){
+        ImageButton ibSetting = findViewById(R.id.imageButtonSettings);
+        ibSetting.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ContactListActivity.this, ContactSettingsActivity.class);
+                intent.setFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
